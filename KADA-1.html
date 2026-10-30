@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>咔搭 KADA · 搭一把就走</title>
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --bg:#0b0f15;--panel:#151b24;--panel2:#1b2330;--line:#28313f;
+    --text:#e8eef6;--muted:#8c9aab;--accent:#5b9dff;--accent2:#8b6bff;
+    --ok:#34d399;--warn:#f5a623;--danger:#f87171;
+  }
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(900px 500px at 12% -8%, rgba(91,157,255,.16), transparent 60%),
+      radial-gradient(800px 460px at 92% 4%, rgba(139,107,255,.14), transparent 62%),
+      radial-gradient(700px 420px at 50% 108%, rgba(52,211,153,.07), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    min-height:100vh;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 18px}
+  a{color:var(--accent);text-decoration:none;cursor:pointer}
+  button{
+    font:inherit;cursor:pointer;border:none;border-radius:10px;padding:10px 17px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#04101f;font-weight:700;
+    box-shadow:0 6px 18px -8px rgba(91,157,255,.75);
+    transition:transform .16s, box-shadow .16s, filter .16s;
+  }
+  button:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px -8px rgba(91,157,255,.85);filter:brightness(1.06)}
+  button:active:not(:disabled){transform:translateY(0)}
+  button.ghost{background:rgba(255,255,255,.03);color:var(--text);border:1px solid var(--line);box-shadow:none}
+  button.ghost:hover:not(:disabled){border-color:var(--accent);background:rgba(91,157,255,.08);box-shadow:none}
+  button.small{padding:7px 13px;font-size:13px;border-radius:9px}
+  button.danger{background:linear-gradient(135deg,#f87171,#e11d48);color:#fff;box-shadow:0 6px 18px -8px rgba(248,113,113,.7)}
+  button:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+  
+  input,select,textarea{
+    font:inherit;background:var(--panel2);border:1px solid var(--line);color:var(--text);
+    border-radius:10px;padding:10px 13px;width:100%;outline:none;transition:border-color .15s, box-shadow .15s;
+  }
+  select option { background-color: var(--panel2); color: var(--text); }
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,157,255,.14)}
+  label{display:block;font-size:13px;color:var(--muted);margin:12px 0 5px}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#2b3543;border-radius:20px;border:2px solid var(--bg)}
+
+  .top{position:sticky;top:0;z-index:20;background:rgba(11,15,21,.82);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.05)}
+  .top::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:linear-gradient(90deg,transparent,rgba(91,157,255,.55),rgba(139,107,255,.55),transparent);opacity:.7}
+  .top-in{display:flex;align-items:center;justify-content:space-between;height:66px;gap:12px}
+  .brand{display:flex;align-items:center;gap:12px;cursor:pointer;flex:0 0 auto}
+  .logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#5b9dff,#8b6bff);display:grid;place-items:center;font-weight:900;color:#06101f;font-size:19px;box-shadow:0 8px 22px -8px rgba(91,157,255,.9);transition:transform .2s}
+  .brand:hover .logo{transform:rotate(-6deg) scale(1.05)}
+  .bname{font-weight:900;font-size:18px;letter-spacing:2px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .demo-badge{font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;background:rgba(245,166,35,.15);color:var(--warn);border:1px solid rgba(245,166,35,.4);letter-spacing:.5px;white-space:nowrap;cursor:help}
+  .bslogan{font-size:11.5px;color:var(--muted)}
+  .top-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+  .me{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .me b{color:var(--text)}
+  .myrooms-btn{position:relative}
+  .myrooms-btn .badge{position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;font-size:10px;font-weight:800;border-radius:10px;padding:1px 6px;min-width:18px;text-align:center}
+
+  #app{animation:fadeUp .28s ease both}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .hero{padding:36px 0 20px;text-align:center}
+  .hero h1{font-size:34px;margin:0 0 12px;letter-spacing:2px;line-height:1.25;background:linear-gradient(100deg,#eaf2ff 10%,#8ab6ff 45%,#b79bff 80%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--muted);margin:0 auto;max-width:520px}
+  .stats{display:flex;gap:14px;justify-content:center;margin-top:22px;flex-wrap:wrap}
+  .stat{font-size:12.5px;color:var(--muted);background:rgba(255,255,255,.028);border:1px solid var(--line);padding:10px 20px;border-radius:14px;min-width:96px;transition:transform .18s,border-color .18s}
+  .stat:hover{transform:translateY(-2px);border-color:rgba(91,157,255,.5)}
+  .stat b{display:block;font-size:23px;color:var(--text);font-weight:900;line-height:1.2;margin-bottom:1px}
+
+  /* 极速发车 & 搜索区（更扁、更宽） */
+  .action-box { display: flex; gap: 14px; margin: 26px auto 0; max-width: 680px; flex-wrap: wrap; align-items: center; }
+  .action-card {
+    flex: 1; min-width: 220px; background: linear-gradient(165deg, rgba(255,255,255,.05), rgba(255,255,255,.01));
+    border: 1px solid var(--line); border-radius: 14px; padding: 0 16px; cursor: pointer;
+    display: flex; align-items: center; gap: 12px; transition: all .2s; height: 52px;
+  }
+  .action-card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 10px 24px -12px rgba(91,157,255,.6); }
+  .action-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(91,157,255,.15); color: var(--accent); display: grid; place-items: center; font-size: 16px; font-weight: 900; flex: 0 0 auto; }
+  .action-text { display: flex; align-items: baseline; gap: 8px; overflow: hidden; white-space: nowrap; }
+  .action-text h4 { margin: 0; font-size: 15px; color: #fff; font-weight: 800; flex: 0 0 auto; }
+  .action-text p { margin: 0; font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; }
+  
+  .action-search { flex: 1.5; min-width: 280px; position: relative; display: flex; height: 52px; }
+  .action-search input { width: 100%; height: 100%; padding: 0 16px 0 44px; border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid var(--line); font-size: 14px; }
+  .action-search input:focus { border-color: var(--accent); }
+  .action-search .ico { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; }
+
+  .sec-title{font-size:13px;color:var(--muted);margin:34px 0 14px;letter-spacing:3px;text-transform:uppercase; display:flex; justify-content:space-between; align-items:center;}
+
+  .cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(198px,1fr));gap:13px}
+  .cat{background:linear-gradient(160deg,rgba(255,255,255,.045),rgba(255,255,255,.012));border:1px solid var(--line);border-radius:16px;padding:17px;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;position:relative;overflow:hidden}
+  .cat::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c);transition:width .18s}
+  .cat:hover{transform:translateY(-3px);border-color:var(--c);box-shadow:0 16px 30px -18px var(--c)}
+  .cat:hover::after{width:4px}
+  .cat-ico{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-weight:800;font-size:13px;background:rgba(255,255,255,.05);color:var(--c);margin-bottom:10px;border:1px solid rgba(255,255,255,.06)}
+  .cat-name{font-weight:800;font-size:15px}
+  .cat-meta{font-size:12px;color:var(--muted);margin-top:3px}
+
+  .apply-box{margin:36px 0 10px;background:linear-gradient(135deg,rgba(91,157,255,.07),rgba(139,107,255,.05));border:1px dashed rgba(91,157,255,.35);border-radius:16px;padding:20px 22px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .apply-box p{margin:0;color:var(--muted);font-size:13.5px;max-width:620px}
+
+  .backbar{display:flex;align-items:center;gap:12px;padding:24px 0 6px}
+  .backbar .back{cursor:pointer;color:var(--muted);font-size:14px;transition:color .15s}
+  .backbar .back:hover{color:var(--accent)}
+  .page-title{font-size:22px;font-weight:900;margin:8px 0 4px;letter-spacing:.5px}
+  .page-sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+
+  .games{display:grid;grid-template-columns:repeat(auto-fill,minmax(152px,1fr));gap:11px}
+  .game{background:rgba(255,255,255,.032);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;gap:10px;align-items:center;cursor:pointer;transition:transform .16s,border-color .16s,background .16s}
+  .game:hover{transform:translateY(-2px);border-color:var(--accent);background:rgba(91,157,255,.07)}
+  .g-ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-weight:800;font-size:12px;flex:0 0 auto}
+  .g-name{font-size:13.5px;font-weight:700;line-height:1.3}
+  .g-meta{font-size:11.5px;color:var(--muted)}
+
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px;align-items:center}
+  .filters select{width:auto;min-width:132px;padding:8px 11px;font-size:13px;border-radius:10px;background:rgba(255,255,255,.03)}
+  .filters .filter-label{font-size:12.5px;color:var(--muted);margin-right:2px}
+
+  .room-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+  @media(max-width:900px){.room-grid{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:640px){.room-grid{grid-template-columns:repeat(2,1fr)}}
+
+  .rcard{background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:9px;position:relative;min-height:210px;transition:transform .18s,border-color .18s,box-shadow .18s}
+  .rcard:hover{transform:translateY(-3px);border-color:rgba(91,157,255,.55);box-shadow:0 18px 34px -22px rgba(91,157,255,.8)}
+  .rcard.hl{border-color:rgba(245,166,35,.55);box-shadow:0 0 0 1px rgba(245,166,35,.25) inset,0 14px 30px -24px rgba(245,166,35,.9)}
+  .rcard.started{border-color:rgba(52,211,153,.5)}
+  .rcard.expired{opacity:.42}
+  .rcard.mine{border-color:rgba(139,107,255,.6);box-shadow:0 0 0 1px rgba(139,107,255,.3) inset}
+  
+  .rcard-top{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
+  .rcard-game{font-weight:900;font-size:15px;line-height:1.2;word-break:break-word}
+  .rcard-sub{font-size:11.5px;color:var(--muted);margin-top:3px;word-break:break-word}
+  .rcard-count{font-size:11.5px;color:var(--muted);white-space:nowrap;background:rgba(255,255,255,.05);border:1px solid var(--line);padding:2px 9px;border-radius:20px}
+  .rcard-count b{color:var(--accent);font-size:14px}
+  .rcard-tags{display:flex;flex-wrap:wrap;gap:5px}
+  .tag{font-size:11px;background:rgba(255,255,255,.05);border:1px solid var(--line);color:#a9b7c8;padding:2px 9px;border-radius:20px;white-space:nowrap}
+  .rcard-tags .tag{font-size:10.5px;padding:2px 8px}
+  .tag.hot{color:var(--ok);border-color:rgba(52,211,153,.35)}
+  .tag.live{color:var(--ok);border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.1)}
+  .tag.miss{color:var(--warn);border-color:rgba(245,166,35,.4);background:rgba(245,166,35,.09)}
+  .tag.full{color:var(--accent);border-color:rgba(91,157,255,.45);background:rgba(91,157,255,.1)}
+  .tag.new{color:#fbbf24;border-color:rgba(245,166,35,.45);background:rgba(245,166,35,.12)}
+  .tag.dim{opacity:.65}
+  .tag.mine{color:#b79bff;border-color:rgba(139,107,255,.5);background:rgba(139,107,255,.12)}
+  .rcard-note{font-size:11.5px;color:var(--muted);flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.55;min-height:0;word-break:break-word}
+  .rcard-foot{margin-top:auto}
+  .rcard-foot button{width:100%;padding:8px;font-size:13px;border-radius:10px}
+  .empty{color:var(--muted);text-align:center;padding:46px 0;font-size:14px}
+
+  .form{background:linear-gradient(165deg,rgba(255,255,255,.045),rgba(255,255,255,.012));border:1px solid var(--line);border-radius:16px;padding:24px;max-width:620px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .form-actions{margin-top:24px;display:flex;gap:10px}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+
+  .roomhead{background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-bottom:16px;position:relative;overflow:hidden}
+  .roomhead::before{content:"";position:absolute;top:-60px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(91,157,255,.16),transparent 70%);pointer-events:none}
+  .roomhead.started{border-color:rgba(52,211,153,.45)}
+  .roomhead.started::before{background:radial-gradient(circle,rgba(52,211,153,.16),transparent 70%)}
+  .rh-top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start}
+  .rh-title{font-size:20px;font-weight:900;letter-spacing:.4px}
+  .rh-sub{color:var(--muted);font-size:13px;margin-top:3px}
+  .timer{font-variant-numeric:tabular-nums;font-size:13px;color:var(--warn);background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);padding:6px 13px;border-radius:20px;white-space:nowrap;font-weight:600}
+  .statebar{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:13.5px;flex-wrap:wrap}
+  .statebar .pill{padding:4px 13px;border-radius:20px;font-weight:700;font-size:12.5px}
+  .pill.open{background:rgba(245,166,35,.12);color:var(--warn);border:1px solid rgba(245,166,35,.35)}
+  .pill.started{background:rgba(52,211,153,.12);color:var(--ok);border:1px solid rgba(52,211,153,.35)}
+  .pill.closed{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--line)}
+  .members{display:flex;gap:7px;flex-wrap:wrap;margin-top:15px}
+  .mem{font-size:12.5px;background:rgba(255,255,255,.05);border:1px solid var(--line);padding:4px 12px;border-radius:20px;display:flex;align-items:center;gap:6px}
+  .mem.host{border-color:rgba(91,157,255,.55);color:var(--accent);background:rgba(91,157,255,.09)}
+  .mem.mine{border-color:rgba(139,107,255,.55);background:rgba(139,107,255,.09)}
+  .mem .kick{cursor:pointer;color:var(--danger);font-size:11px;padding:0 4px;opacity:.7}
+  .mem .kick:hover{opacity:1}
+  .actions{margin-top:18px;display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+
+  .chat{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008));border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;height:460px;box-shadow:0 24px 50px -34px rgba(0,0,0,.9)}
+  .chat-head{padding:13px 18px;border-bottom:1px solid rgba(255,255,255,.05);font-size:13px;color:var(--muted);display:flex;justify-content:space-between;background:rgba(255,255,255,.02)}
+  .chat-warn{padding:9px 18px;font-size:11.5px;color:#f5b95a;background:linear-gradient(90deg,rgba(245,166,35,.09),rgba(245,166,35,.03));border-bottom:1px solid rgba(245,166,35,.18);line-height:1.6}
+  .msgs{flex:1;overflow-y:auto;padding:20px 18px;display:flex;flex-direction:column;gap:14px;background:radial-gradient(420px 220px at 88% 8%,rgba(139,107,255,.06),transparent 70%),radial-gradient(420px 220px at 8% 92%,rgba(91,157,255,.06),transparent 70%);scroll-behavior:smooth}
+  .msg{max-width:76%;animation:msgIn .2s ease both}
+  @keyframes msgIn{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:none}}
+  .msg .who{font-size:11px;color:#7b8899;margin:0 6px 4px}
+  .msg .bubble{background:#1e2733;border:1px solid rgba(255,255,255,.06);padding:10px 14px;font-size:14px;word-break:break-word;line-height:1.55;border-radius:18px 18px 18px 6px;box-shadow:0 6px 16px -12px rgba(0,0,0,.9)}
+  .msg.mine{align-self:flex-end;text-align:right}
+  .msg.mine .bubble{background:linear-gradient(135deg,#3f7fe0,#6b5cf0);border-color:rgba(255,255,255,.12);color:#f4f8ff;border-radius:18px 18px 6px 18px;box-shadow:0 10px 24px -14px rgba(91,157,255,.9)}
+  .msg.demo .bubble{border-style:dashed;opacity:.85}
+  .msg.sys{align-self:center;max-width:90%;text-align:center;font-size:11.5px;color:#8f9daf;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);padding:4px 14px;border-radius:20px}
+  .chat-input{display:flex;gap:10px;padding:13px 16px;border-top:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.025)}
+  .chat-input input{background:#10161e;border-radius:22px;padding:11px 18px;border-color:rgba(255,255,255,.08)}
+  .chat-input button{border-radius:22px;padding:0 22px;white-space:nowrap}
+  .chat-foot{padding:9px 18px;font-size:11.5px;color:#7b8899;border-top:1px solid rgba(255,255,255,.04); display: flex; justify-content: space-between; gap: 12px;}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(4,7,11,.72);backdrop-filter:blur(4px);display:grid;place-items:center;z-index:50;padding:18px}
+  .modal-bg[hidden]{display:none}
+  .modal{background:linear-gradient(165deg,#1a222d,#141a23);border:1px solid var(--line);border-radius:18px;padding:26px;width:100%;max-width:460px;box-shadow:0 40px 80px -30px rgba(0,0,0,.95);animation:fadeUp .22s ease both}
+  .modal h3{margin:0 0 8px;font-size:17px}
+  .modal p{color:var(--muted);font-size:13.5px;margin:0 0 16px}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+
+  .toast{position:fixed;bottom:32px;left:50%;transform:translate(-50%,20px);background:rgba(30,39,51,.97);color:#e8eef6;border:1px solid var(--line);padding:11px 22px;border-radius:12px;font-size:13.5px;z-index:100;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 16px 40px -16px rgba(0,0,0,.9);max-width:min(90vw,480px);text-align:center;line-height:1.5}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast-warn{border-color:rgba(245,166,35,.55);color:#fbd28b}
+  .toast-danger{border-color:rgba(248,113,113,.55);color:#fca5a5}
+  .toast-success{border-color:rgba(52,211,153,.55);color:#6ee7b7}
+
+  .foot{border-top:1px solid rgba(255,255,255,.05);margin-top:50px;padding:24px 18px 44px;color:var(--muted);font-size:12.5px;line-height:1.9}
+  .foot .wrap{padding:0}
+  .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ok);margin-right:7px;vertical-align:middle;box-shadow:0 0 8px var(--ok)}
+
+  @media(max-width:560px){
+    .hero h1{font-size:25px}
+    .hero{padding:34px 0 18px}
+    .row2{grid-template-columns:1fr}
+    .chat{height:390px}
+    .rcard{min-height:192px}
+    .msgs{padding:16px 13px}
+    .msg{max-width:84%}
+    .bslogan{display:none}
+    .top-right{gap:6px}
+    .action-card{min-width:100%;}
+    .action-search{min-width:100%;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-in">
+    <div class="brand" onclick="go('home')">
+      <span class="logo">咔</span>
+      <div>
+        <div class="bname">咔搭 <span class="demo-badge" title="本页为纯前端演示：房间和消息只保存在你本机浏览器，不会上传。">本机演示</span></div>
+        <div class="bslogan">不语音 · 不加好友 · 不交易 · 搭一把就走</div>
+      </div>
+    </div>
+    <div class="top-right">
+      <button class="ghost small myrooms-btn" onclick="go('myrooms')">我的房<span class="badge" id="myRoomsBadge" style="display:none">0</span></button>
+      <div class="me" id="meBox"></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="app"></main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div><span class="dot"></span><b>本机演示说明：</b>房间、消息、拉黑、举报记录都只保存在当前浏览器，不会上传，也不会跨设备同步。</div>
+    <div>正式版本将接入：手机号实名、内容安全审核、服务端房间与消息、双向黑名单、人工举报处置、消息留存 6 个月。</div>
+    <div>不做语音、不做好友、不做私信、不做交易。找搭子，搭一把，各自回到生活里。</div>
+  </div>
+</footer>
+
+<div class="modal-bg" id="modalBg" hidden><div class="modal" id="modal"></div></div>
+
+<script>
+/* =========================================================
+   咔搭 KADA · v17 (扁平发车 + 完整卡片信息)
+   ========================================================= */
+
+const CATS = [
+  { id:'mmo', name:'MMORPG', color:'#7c5cff', games:['魔兽世界','最终幻想14','剑网3','天涯明月刀','逆水寒','激战2','上古卷轴OL','黑色沙漠','新世界','命运方舟','永恒之塔','剑灵','古剑奇谭网络版','星战：旧共和国','阿尔比恩OL','RuneScape','EVE Online','洛奇英雄传','云之国','JungoJam','Loftia','Palia','风启之旅','RuneScape: Dragonwilds','星痕共鸣','塔瑞斯世界','蓝色协议','王权与自由','昆法尔','Chrono Odyssey']},
+  { id:'fps', name:'射击 / FPS', color:'#5b9dff', games:['CS2','无畏契约','守望先锋2','战地2042','使命召唤','彩虹六号：围攻','命运2','泰坦陨落2','光环：无限','穿越火线','深岩银河','GTFO','The Finals','军团要塞2','半条命2：死亡竞赛','Splitgate','Black Squad','CrossfireX','Apex英雄','ARC Raiders','漫威争锋','Deadlock','Supervive','Bodycam','Incursion Red River','Beautiful Light','83','战术小队','人间地狱','严阵以待','Zero Hour','Ground Branch','叛乱：沙漠风暴','武装突袭3','Arma Reforger','Post Scriptum','Six Days in Fallujah','雷霆一号','猎杀：对决','逃离塔科夫','暗区突围','三角洲行动','Gray Zone Warfare','Lost Light','Off The Grid','午夜行者','Marathon','Unrecord','界外狂潮','FragPunk','Strinova','卡拉彼丘','枪火游侠','Paladins','枪神纪']},
+  { id:'moba', name:'MOBA / 团队竞技', color:'#34d399', games:['英雄联盟','DOTA2','风暴英雄','SMITE','Battlerite','Awesomenauts','Paragon: The Overprime','Rogue Company','神之浩劫','超维对决','SMITE 2','Honor of Kings','梦三国2','英魂之刃','300大作战','永恒轮回','Eternal Return','Battle Arena','Fangs','Warborne Above Ashes','March Of Giants','EverSiege','Golden Tides']},
+  { id:'surv', name:'生存建造 / 合作生存', color:'#a78bfa', games:['Minecraft','Rust','方舟：生存进化','七日杀','森林之子','绿色地狱','饥荒联机版','英灵神殿','雾锁王国','幻兽帕鲁','DayZ','泰拉瑞亚','Raft','禁闭求生','无人深空','Abiotic Factor','ICARUS','夜莺','夜族崛起','V Rising','太阳朋克：浮岛家园','Schedule I','深海迷航2','Subnautica 2','Bellwright','Palia','Loftia','云之国','JungoJam','风启之旅','Light No Fire','Unturned','No More Room In Hell','木筏生存','Havendock','海港物语','Far Far West','Crashout Crew','Timberborn']},
+  { id:'arpg', name:'刷宝 ARPG', color:'#f87171', games:['暗黑破坏神4','流放之路','流放之路2','火炬之光：无限','最后纪元','恐怖黎明','无主之地3','无主之地2','Warframe','Titan Quest','Chronicon','Grim Dawn','Death Must Die','Hades II','Heroes of Hammerwatch 2','Wolcen: Lords of Mayhem','Titan Quest 2','火炬之光2','Torchlight II','怪物猎人：荒野','怪物猎人：世界','怪物猎人：崛起','艾尔登法环：黑夜君临','Elden Ring Nightreign','黑暗之魂3','Dark Souls III','Absolum','Bellwright','巫塔战记','秘境战盟']},
+  { id:'rts', name:'RTS / 策略', color:'#38bdf8', games:['星际争霸2','魔兽争霸3','帝国时代4','帝国时代2：决定版','英雄连3','全面战争：三国','文明6','群星','钢铁雄心4','欧陆风云4','命令与征服：重制版','光环战争2','北境之地','亿万僵尸','异星工厂','缺氧','红色警戒2','家园3','零度空间','Tempest Rising','Broken Arrow','Global Conflagration','Stronghold Crusader','Here Comes the Swarm','Flow Of War','Ashes of the Singularity II','Space Tales','Sudden Strike 5','The Last General','Masters of Albion','Falling Frontier','Anvil Empires','Crusader Kings III','Total War: Warhammer III','战锤40K：战争黎明4','英雄无敌3','战锤40K：行商浪人','XCOM 2','神界：原罪2','博德之门3']},
+  { id:'race', name:'竞速 / 体育', color:'#fbbf24', games:['极限竞速：地平线5','F1 24','神力科莎','神力科莎：竞技','iRacing','赛车计划2','尘埃拉力2.0','EA Sports FC 24','NBA 2K24','火箭联盟','实况足球','WRC','BeamNG.drive','Trackmania','欧洲卡车模拟2','Golf With Your Friends','极限竞速：地平线6','Forza Horizon 6','iRacing Arcade','F1 26','Screamer','RIDE 6','MotoGP 26','NASCAR 26','MXGP 26','Gear.Club Unlimited 3','Wreckfest 2','Over the Hill','EA Sports F1 25','F1 Simulator','Asseto Corsa','Galactic Racer','Sledding Game']},
+  { id:'card', name:'卡牌 / 回合策略', color:'#c084fc', games:['炉石传说','万智牌：竞技场','符文之地传说','昆特牌','游戏王：大师决斗','影之诗','云顶之弈','杀戮尖塔','杀戮尖塔2','小丑牌','Balatro','邪恶冥刻','Inscryption','Griftlands','Chrono Ark','怪物火车2','Monster Train 2','Tendryll','发糖模拟器','猫神牧场','召唤命途','爱丽丝与巨人','黑夜轮回','Culdcept BEGINS','三国志BOND','SPAM','Tabletop Simulator','Heroes of Science and Fiction','Terra Invicta','Kingdom Rush 6']},
+  { id:'party', name:'派对 / 休闲合作', color:'#4ade80', games:['Among Us','鹅鸭杀','胡闹厨房2','双人成行','人类一败涂地','糖豆人','Pummel Party','Garry\'s Mod','恐鬼症','致命公司','Content Warning','Peak','R.E.P.O.','Moving Out','Unrailed','Jackbox 派对包','双影奇境','Split Fiction','猛兽派对','Heave Ho 2','Gamble With Your Friends','机械狂欢','乱剪一通','PICO PARK 2','Ultimate Sheep Raccoon','Hold Your King','We Are So Cooked','Barfender','Last Man Sitting','Drive Together','Moving Out 2','Lego Voyagers','咩咩启示录','吸血鬼幸存者','毛线小精灵2','Reanimal','Big Walk','Risk of Rain 2','Left 4 Dead 2','Portal 2','Deep Rock Galactic','Sea of Thieves','星露谷物语','Schedule I','PEAK','我们到了吗','Supermarket Together','One-armed cook','We Were Here','Alien Swarm: Reactive Drop','Wires and Whiskers','万物皆可捏','Mimic Busters','Sledding Game','超级浣熊羊','Lego Party','忍者龟：史林特的命运','索尼克赛车','漫威宇宙入侵','Pico Park 2']},
+  { id:'tac', name:'战术 / 撤离射击', color:'#f59e0b', games:['逃离塔科夫','暗区突围','猎杀：对决','战术小队','人间地狱','严阵以待','Zero Hour','Ground Branch','Gray Zone Warfare','叛乱：沙漠风暴','武装突袭3','Arma Reforger','Post Scriptum','Six Days in Fallujah','雷霆一号','三角洲行动','ARC Raiders','Marathon','Lost Light','Off The Grid','午夜行者','Arena Breakout: Infinite','Beautiful Light','Incursion Red River','Bodycam','Unrecord']}
+];
+
+const CAT_DEFAULT_CONFIG = {
+  mmo:   { servers: ['国服','亚服','欧服','美服','其他'], modes: ['团本','打本','日常','排位','休闲','其他'] },
+  fps:   { servers: ['国服','亚服','欧服','美服','其他'], modes: ['匹配','排位','休闲','死斗','其他'] },
+  moba:  { servers: ['国服','亚服','欧服','美服','其他'], modes: ['匹配','排位','大乱斗','其他'] },
+  surv:  { servers: ['联机','官服','私服','其他'], modes: ['开荒','生存','建筑','其他'] },
+  arpg:  { servers: ['赛季','非赛季','专家','其他'], modes: ['刷图','组队','爬塔','其他'] },
+  rts:   { servers: ['战网','Steam','其他'], modes: ['1v1','2v2','混战','合作','其他'] },
+  race:  { servers: ['官方','私服','其他'], modes: ['竞速','联机','漂移','其他'] },
+  card:  { servers: ['国服','亚服','美服','其他'], modes: ['标准','狂野','竞技场','其他'] },
+  party: { servers: ['联机','私服','其他'], modes: ['休闲','搞怪','小游戏','其他'] },
+  tac:   { servers: ['亚服','欧服','美服','其他'], modes: ['组队撤离','跑刀','起装','其他'] }
+};
+
+const GAME_CUSTOM_CONFIG = {
+  'CS2': { servers: ['完美','5E','B5','官匹','其他'], modes: ['竞技','休闲','死斗','回防','其他'] },
+  '无畏契约': { servers: ['港服','国服','新加坡','日服','其他'], modes: ['竞技','非排位','死斗','团队','其他'] },
+  '英雄联盟': { servers: ['艾欧尼亚','黑色玫瑰','祖安','诺克萨斯','比尔吉沃特','其他'], modes: ['匹配','排位','大乱斗','云顶之弈','其他'] },
+  '魔兽世界': { servers: ['金色平原','安苏','贫瘠之地','布兰卡德','其他'], modes: ['大秘境','团本','战场','练级','其他'] },
+  'Minecraft': { servers: ['网易版','国际版','其他'], modes: ['生存','创造','小游戏','模组','其他'] },
+  '逃离塔科夫': { servers: ['俄服','欧服','美服','亚服','其他'], modes: ['组队撤离','跑刀','起装','其他'] },
+  '暗黑破坏神4': { servers: ['赛季','非赛季','专家','其他'], modes: ['刷图','组队','爬塔','其他'] },
+  'Apex英雄': { servers: ['港服','日服','欧服','美服','其他'], modes: ['匹配','排位','控制','死斗','其他'] },
+  '三角洲行动': { servers: ['国服QQ区','国服微信区','国际服','其他'], modes: ['烽火地带','全面战场','其他'] },
+  '雾锁王国': { servers: ['联机','私服','其他'], modes: ['开荒','建造','探索','其他'] },
+  '夜族崛起': { servers: ['官服','私服','其他'], modes: ['PvE','5v5 PvP','开荒','其他'] },
+  '猛兽派对': { servers: ['国服','Steam','其他'], modes: ['匹配','自定义','大乱斗','其他'] },
+  '梦三国2': { servers: ['火烧赤壁','官渡之战','桃园结义','其他'], modes: ['匹配','排位','娱乐','其他'] },
+  'ARC Raiders': { servers: ['亚服','欧服','美服','其他'], modes: ['三人小队撤离','独狼跑刀','其他'] },
+  '绝地潜兵2': { servers: ['全球'], modes: ['常规行动','闪电战','防御战','其他'] },
+  '双影奇境': { servers: ['EA账号','其他'], modes: ['双人合作','其他'] },
+  'R.E.P.O.': { servers: ['联机','私服','其他'], modes: ['常规','挑战','模组','其他'] },
+  '致命公司': { servers: ['联机','私服','其他'], modes: ['常规','挑战','模组','其他'] },
+  '恐鬼症': { servers: ['联机','其他'], modes: ['业余','中级','专业','噩梦','其他'] },
+  '战舰世界': { servers: ['国服','亚服','欧服','美服','莱服','其他'], modes: ['标准战','排位战','联合作战','其他'] },
+  '坦克世界': { servers: ['国服','亚服','欧服','美服','莱服','其他'], modes: ['标准战','排位战','军团战','其他'] },
+  '战争雷霆': { servers: ['全球'], modes: ['街机','历史','全真','其他'] },
+  'Deadlock': { servers: ['全球'], modes: ['6v6','4v4竞技场','其他'] },
+  'Supervive': { servers: ['国服','国际服','其他'], modes: ['大逃杀','死斗','其他'] },
+  'Schedule I': { servers: ['联机','私服','其他'], modes: ['合作经营','其他'] },
+  '深岩银河': { servers: ['联机','其他'], modes: ['采矿远征','深潜','其他'] },
+  'Left 4 Dead 2': { servers: ['官方','社区','其他'], modes: ['战役','对抗','生存','其他'] },
+  'Portal 2': { servers: ['Steam','其他'], modes: ['合作战役','其他'] },
+  '星露谷物语': { servers: ['联机','其他'], modes: ['合作经营','其他'] },
+  '泰拉瑞亚': { servers: ['联机','其他'], modes: ['生存','建筑','Boss','其他'] }
+};
+
+const K_ROOMS = 'dazi.rooms.v17';
+const K_SID = 'dazi.sid.v1';
+const K_NAME = 'dazi.name.v1';
+const K_APPLY = 'dazi.apply.v1';
+const K_REPORT = 'dazi.report.v1';
+const K_BLACKLIST = 'dazi.blacklist.v1';
+
+const HIGHLIGHT_MIN = 8;
+const LIST_TTL_MIN = 10;
+const CHAT_TTL_MIN = 10;
+
+const LEVEL_OPTIONS = ['不限','新手友好','中等水平','高手局'];
+const TYPE_OPTIONS = ['随便打打','认真上分','刷任务','新手互助','其他（备注说明）'];
+
+const BLOCK_WORDS = ['纯绿','半绿','地陪','有偿','付费陪','线下陪','空降','包夜','特殊服务','约炮','一夜情','楼凤','上门服务','全套','半套','兼职妹','学生妹','外围','福利姬','裸聊','视频裸','果聊','同城约','探花','嫖','娼','援交'];
+const CONTACT_PATTERNS = [
+  /1[3-9]\d{9}/, /1[3-9]\d[-\s]?\d{4}[-\s]?\d{4}/,
+  /(?:qq|QQ)\s*[:：]?\s*\d{5,12}/,
+  /(?:微[信❤️]?|vx|wx|VX|WX|wechat|WeChat)\s*[:：]?\s*[a-zA-Z0-9_-]{5,}/,
+  /(?:加|私|联系).{0,4}(?:微信|vx|wx|qq|QQ)/, /(?:\d[-\s]?){8,}/
+];
+function containsBlockedContent(text){
+  if(!text) return { blocked:false };
+  const lower = String(text).toLowerCase();
+  for(const w of BLOCK_WORDS){ if(lower.includes(w.toLowerCase())) return { blocked:true, reason:'包含平台禁止的词汇' }; }
+  for(const p of CONTACT_PATTERNS){ if(p.test(text)) return { blocked:true, reason:'包含疑似联系方式，平台禁止引导站外沟通' }; }
+  return { blocked:false };
+}
+const SHORT_OK = new Set(['好','行','开','来','可以','缺','要','等','嗯','1','ok','okay','走','上','打','搞','冲','没','有','是','对','到','满','人','齐','几','点','哪','服','区','啊','吗','呢','在','来吗','开了','等你','6','哈','哈哈']);
+
+function getSid(){ let s = localStorage.getItem(K_SID); if(!s){ s = 's_' + Math.random().toString(36).slice(2,11); localStorage.setItem(K_SID, s); } return s; }
+function getName(){ return localStorage.getItem(K_NAME) || ''; }
+function setName(n){ localStorage.setItem(K_NAME, n); }
+const MY_SID = getSid();
+
+function loadRooms(){
+  let list = [];
+  try{ list = JSON.parse(localStorage.getItem(K_ROOMS)) || []; }catch(e){ list = []; }
+  const now = Date.now();
+  list = list.filter(r => now - r.createdAt < 24*3600*1000);
+  list.forEach(r => {
+    if(!r.status) r.status = 'open';
+    if(r.members && r.members.length && typeof r.members[0] === 'string'){
+      r.members = r.members.map((name, i) => ({ sid:'legacy_' + i, name }));
+    }
+    if(!r.hostSid && r.host) r.hostSid = 'legacy_host';
+  });
+  return list;
+}
+function saveRooms(list, opts){
+  try{ localStorage.setItem(K_ROOMS, JSON.stringify(list)); }
+  catch(e){ showToast('本地存储已满，请清理旧房间或消息。', 'warn'); }
+  if(!opts || !opts.noRender) render(); else updateBadge();
+}
+
+function loadBlacklist(){ let b = {}; try{ b = JSON.parse(localStorage.getItem(K_BLACKLIST)) || {}; }catch(e){ b = {}; } return b; }
+function blockUser(sid){ if(!sid || sid === MY_SID) return; const b = loadBlacklist(); if(!b[MY_SID]) b[MY_SID] = []; if(!b[MY_SID].includes(sid)) b[MY_SID].push(sid); localStorage.setItem(K_BLACKLIST, JSON.stringify(b)); }
+function isBlacklistedByMe(sid){ if(!sid) return false; const b = loadBlacklist(); return (b[MY_SID] || []).includes(sid); }
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function catById(id){ return CATS.find(c => c.id === id); }
+function gameKey(catId, idx){ return catId + '#' + idx; }
+function fmtClock(ts){ const d = new Date(ts); return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0'); }
+function mmss(ms){ if(ms <= 0) return '0:00'; const s = Math.floor(ms/1000), m = Math.floor(s/60), ss = s % 60; return m + ':' + String(ss).padStart(2,'0'); }
+function charLen(s){ return [...String(s)].length; }
+function uid(){ return Math.random().toString(36).slice(2,9); }
+
+function expireAtOf(r){ return r.createdAt + LIST_TTL_MIN * 60 * 1000; }
+function isHighlighted(r){ return Date.now() - r.createdAt < HIGHLIGHT_MIN * 60 * 1000; }
+function isChatDead(r){ const last = r.lastActivity || r.createdAt || Date.now(); return Date.now() > last + CHAT_TTL_MIN*60*1000; }
+function roomStatus(r){
+  if(!r) return 'closed';
+  const st = r.status || 'open';
+  if(st === 'closed') return 'closed';
+  if(st === 'started') return isChatDead(r) ? 'closed' : 'started';
+  return Date.now() > expireAtOf(r) ? 'expired' : 'open';
+}
+function isMember(r){ return !!r && (r.members || []).some(m => m.sid === MY_SID); }
+function isHost(r){ return !!r && r.hostSid === MY_SID; }
+
+function myRooms(){
+  return loadRooms().filter(r => {
+    const st = roomStatus(r);
+    if(st === 'expired' || st === 'closed') return false;
+    return isMember(r) || isHost(r);
+  });
+}
+function roomScore(r){
+  const st = roomStatus(r);
+  if(st !== 'open') return -1;
+  const miss = Math.max(0, r.total - r.members.length);
+  const missScore = miss > 0 ? 10 : 0;
+  const lastAct = r.lastActivity || r.createdAt;
+  const recencyScore = Math.max(0, 10 - (Date.now() - lastAct)/60000);
+  const ageScore = Math.max(0, 5 - (Date.now() - r.createdAt)/120000);
+  const highlightBonus = isHighlighted(r) ? 5 : 0;
+  return missScore + recencyScore + ageScore + highlightBonus;
+}
+function roomsOfGame(key){ return loadRooms().filter(r => r.gameKey === key); }
+function countByCat(catId){ return loadRooms().filter(r => r.catId === catId && roomStatus(r) === 'open').length; }
+
+function getFrequentGames(){
+  const rooms = loadRooms().filter(r => isMember(r) || isHost(r));
+  const counts = {};
+  rooms.forEach(r => { counts[r.gameKey] = (counts[r.gameKey] || 0) + 1; });
+  return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 2).map(entry => {
+    const [key, count] = entry;
+    const [catId, idx] = key.split('#');
+    return { catId, idx: +idx, count };
+  });
+}
+
+let toastTimer = null;
+function showToast(msg, type){
+  let el = document.getElementById('toast');
+  if(!el){ el = document.createElement('div'); el.id = 'toast'; el.className = 'toast'; document.body.appendChild(el); }
+  el.className = 'toast show' + (type ? ' toast-' + type : '');
+  el.textContent = msg;
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = 'toast'; }, 2600);
+}
+
+let confirmCallback = null;
+function confirmAction(msg, onConfirm, opts){
+  confirmCallback = onConfirm; opts = opts || {};
+  showModal(`<h3>${esc(opts.title || '确认')}</h3><p>${esc(msg)}</p>
+    <div class="modal-actions"><button class="ghost" onclick="confirmCancel()">取消</button>
+    <button class="${opts.danger ? 'danger' : ''}" onclick="confirmOk()">${esc(opts.okText || '确定')}</button></div>`);
+}
+function confirmOk(){ const cb = confirmCallback; confirmCallback = null; closeModal(); if(cb) cb(); }
+function confirmCancel(){ confirmCallback = null; closeModal(); }
+
+let pendingNickCallback = null;
+function ensureNick(callback){
+  if(getName()){ if(callback) callback(); return true; }
+  pendingNickCallback = callback || null; changeNick(); return false;
+}
+function changeNick(){
+  showModal(`<h3>设置一个临时昵称</h3><p>不需要注册。昵称只用于房间内显示。</p>
+    <input id="nickInput" maxlength="12" placeholder="最多 12 个字" value="${esc(getName())}">
+    <div class="modal-actions"><button class="ghost" onclick="cancelNick()">取消</button>
+    <button onclick="saveNick()">确定</button></div>`);
+  setTimeout(() => { const el = document.getElementById('nickInput'); if(el) el.focus(); }, 50);
+}
+function cancelNick(){ pendingNickCallback = null; closeModal(); }
+function saveNick(){
+  const v = document.getElementById('nickInput').value.trim();
+  if(!v){ showToast('昵称不能为空', 'warn'); return; }
+  const chk = containsBlockedContent(v);
+  if(chk.blocked){ showToast(chk.reason + '。', 'warn'); return; }
+  setName(v);
+  const list = loadRooms(); let changed = false;
+  list.forEach(r => {
+    let touched = false;
+    r.members.forEach(m => { if(m.sid === MY_SID){ m.name = v; touched = true; } });
+    if(r.hostSid === MY_SID){ r.host = v; touched = true; }
+    r.messages.forEach(m => { if(m.sid === MY_SID) m.name = v; });
+    if(touched){ r.lastActivity = Date.now(); changed = true; }
+  });
+  if(changed) saveRooms(list, { noRender:true });
+  const cb = pendingNickCallback; pendingNickCallback = null;
+  closeModal(); updateMe(); if(cb) cb(); else render();
+}
+
+function showModal(html){ document.getElementById('modal').innerHTML = html; document.getElementById('modalBg').hidden = false; }
+function closeModal(){ document.getElementById('modalBg').hidden = true; }
+document.getElementById('modalBg').addEventListener('click', e => { if(e.target.id === 'modalBg') closeModal(); });
+
+function parseHash(){
+  const h = (location.hash || '').replace(/^#\/?/, '');
+  const parts = h.split('/').filter(Boolean);
+  if(!parts.length) return { name:'home' };
+  if(parts[0] === 'cat') return { name:'cat', catId:parts[1] };
+  if(parts[0] === 'rooms') return { name:'rooms', catId:parts[1], idx:+parts[2] };
+  if(parts[0] === 'create') return { name:'create', catId:parts[1], idx:+parts[2] };
+  if(parts[0] === 'room') return { name:'room', roomId:parts[1] };
+  if(parts[0] === 'apply') return { name:'apply' };
+  if(parts[0] === 'myrooms') return { name:'myrooms' };
+  return { name:'home' };
+}
+function hashFor(view){
+  switch(view.name){
+    case 'home': return '#/'; case 'cat': return `#/cat/${view.catId}`;
+    case 'rooms': return `#/rooms/${view.catId}/${view.idx}`;
+    case 'create': return `#/create/${view.catId}/${view.idx}`;
+    case 'room': return `#/room/${view.roomId}`;
+    case 'apply': return '#/apply'; case 'myrooms': return '#/myrooms';
+    default: return '#/';
+  }
+}
+let view = parseHash();
+let roomFilter = { server:'', level:'', miss:'' };
+
+function go(name, params){
+  view = Object.assign({ name }, params || {});
+  if(name !== 'rooms'){ roomFilter = { server:'', level:'', miss:'' }; }
+  history.pushState(null, '', hashFor(view)); render(); window.scrollTo({ top:0, behavior:'smooth' });
+}
+function syncFromHash(){
+  view = parseHash();
+  if(view.name !== 'rooms'){ roomFilter = { server:'', level:'', miss:'' }; }
+  render();
+}
+window.addEventListener('popstate', syncFromHash);
+window.addEventListener('hashchange', () => { const fromHash = parseHash(); if(hashFor(fromHash) !== hashFor(view)) syncFromHash(); });
+function setFilter(k, v){ roomFilter[k] = v; render(); }
+function applyFilters(list){
+  return list.filter(r => {
+    if(roomFilter.server && r.server !== roomFilter.server) return false;
+    if(roomFilter.level && r.level !== roomFilter.level) return false;
+    if(roomFilter.miss){
+      const miss = Math.max(0, r.total - r.members.length);
+      if(roomFilter.miss === '1' && miss !== 1) return false;
+      if(roomFilter.miss === '2' && miss !== 2) return false;
+      if(roomFilter.miss === '3' && miss < 3) return false;
+    }
+    return true;
+  });
+}
+
+function render(){
+  const app = document.getElementById('app');
+  app.style.animation = 'none'; void app.offsetWidth; app.style.animation = '';
+  switch(view.name){
+    case 'home': app.innerHTML = viewHome(); break;
+    case 'cat': app.innerHTML = viewCat(view.catId); filterCatGames(); break;
+    case 'rooms': app.innerHTML = viewRooms(view.catId, view.idx); break;
+    case 'create': app.innerHTML = viewCreate(view.catId, view.idx); break;
+    case 'room': app.innerHTML = viewRoom(view.roomId); break;
+    case 'apply': app.innerHTML = viewApply(); break;
+    case 'myrooms': app.innerHTML = viewMyRooms(); break;
+    default: app.innerHTML = viewHome();
+  }
+  updateMe(); updateBadge(); startTicker();
+}
+function updateMe(){
+  const box = document.getElementById('meBox'); if(!box) return;
+  const n = getName();
+  box.innerHTML = n ? `昵称：<b>${esc(n)}</b> <a onclick="changeNick()" style="font-size:12px">修改</a>` : `<a onclick="changeNick()">设置临时昵称</a>`;
+}
+function updateBadge(){
+  const badge = document.getElementById('myRoomsBadge'); if(!badge) return;
+  const n = myRooms().length;
+  if(n > 0){ badge.style.display = ''; badge.textContent = n; } else { badge.style.display = 'none'; }
+}
+
+function viewHome(){
+  const open = loadRooms().filter(r => roomStatus(r) === 'open');
+  const totalGames = CATS.reduce((s,c) => s + c.games.length, 0);
+  const freq = getFrequentGames();
+  let freqHTML = '';
+  if(freq.length > 0){
+    freqHTML = `<div class="sec-title">我常搭的游戏</div><div class="games" style="margin-bottom: 30px;">
+      ${freq.map(f => { const c = catById(f.catId); const g = c.games[f.idx];
+        return `<div class="game" onclick="go('rooms',{catId:'${c.id}',idx:${f.idx}})">
+          <div class="g-ico" style="background:${c.color}22;color:${c.color}">${esc(g.slice(0,2))}</div>
+          <div><div class="g-name">${esc(g)}</div><div class="g-meta">最近搭过 ${f.count} 次</div></div></div>`;
+      }).join('')}</div>`;
+  }
+  return `<section class="hero">
+    <h1>咔嚓一下，即刻开搭。</h1>
+    <p>选一个游戏，开个房间，凑一队。</p>
+    <div class="stats"><div class="stat"><b>${CATS.length}</b>游戏类别</div><div class="stat"><b>${totalGames}</b>已收录游戏</div><div class="stat"><b>${open.length}</b>本机正在找人</div></div>
+    
+    <div class="action-box">
+      <div class="action-card" onclick="showQuickStartModal()">
+        <div class="action-icon">🚀</div>
+        <div class="action-text"><h4>极速发车</h4><p>搜索游戏，一键开房</p></div>
+      </div>
+      <div class="action-search">
+        <span class="ico">🔍</span>
+        <input id="searchInput" placeholder="搜游戏名，或输入 7 位房间号直达" oninput="doSearch(this.value)">
+      </div>
+    </div>
+  </section>
+  
+  <div id="searchResults"></div>
+  <div id="catGrid">${freqHTML}
+    <div class="sec-title">选择游戏类别（按大厅找房）</div>
+    <section class="cats">
+      ${CATS.map(c => `<div class="cat" style="--c:${c.color}" onclick="go('cat',{catId:'${c.id}'})">
+        <div class="cat-ico">${esc(c.name.slice(0,2))}</div><div class="cat-name">${esc(c.name)}</div>
+        <div class="cat-meta">${c.games.length} 款游戏 · ${countByCat(c.id)} 个本机房间</div></div>`).join('')}
+    </section>
+    <section class="apply-box"><p>没有找到你的游戏？提交申请，同一游戏意向达到 50 人即开通分区。</p>
+    <button class="ghost" onclick="go('apply')">申请新增游戏</button></section>
+  </div>`;
+}
+
+function showQuickStartModal(){
+  showModal(`
+    <h3>极速发车：选择你要玩的游戏</h3>
+    <input id="quickSearch" placeholder="输入游戏名（如 CS2、英雄联盟、幻兽帕鲁）" oninput="searchQuickGames(this.value)" style="margin-bottom:12px">
+    <div id="quickResults" style="max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;">
+      <div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">输入游戏名开始搜索…</div>
+    </div>
+    <div class="modal-actions">
+      <button class="ghost" onclick="closeModal()">取消</button>
+    </div>
+  `);
+  setTimeout(() => document.getElementById('quickSearch').focus(), 50);
+}
+
+function searchQuickGames(q){
+  const res = document.getElementById('quickResults');
+  q = (q || '').trim().toLowerCase();
+  if(!q){ res.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">输入游戏名开始搜索…</div>'; return; }
+  const hits = [];
+  CATS.forEach(c => c.games.forEach((g,i) => { if(g.toLowerCase().includes(q)) hits.push({ c, g, i }); }));
+  if(!hits.length){ res.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:20px 0;">没有找到该游戏，请去首页申请新增。</div>'; return; }
+  res.innerHTML = hits.slice(0,20).map(h => `
+    <div class="game" onclick="closeModal(); go('create',{catId:'${h.c.id}',idx:${h.i}})">
+      <div class="g-ico" style="background:${h.c.color}22;color:${h.c.color}">${esc(h.g.slice(0,2))}</div>
+      <div><div class="g-name">${esc(h.g)}</div><div class="g-meta">${esc(h.c.name)}</div></div>
+    </div>
+  `).join('');
+}
+
+function doSearch(q){
+  const grid = document.getElementById('catGrid'); const res = document.getElementById('searchResults');
+  q = (q || '').trim();
+  if(!q){ grid.style.display=''; res.innerHTML=''; return; }
+  grid.style.display = 'none';
+  const allRooms = loadRooms();
+  const roomMatch = allRooms.find(r => r.id === q || r.id.toUpperCase() === q.toUpperCase());
+  if (roomMatch) {
+    res.innerHTML = `<div class="sec-title">发现房间</div><div class="room-grid" style="grid-template-columns: 1fr; max-width: 380px;">${roomCard(roomMatch)}</div>
+      <div style="text-align:center;margin-top:10px"><button class="ghost small" onclick="go('room',{roomId:'${roomMatch.id}'})">直接进入房间</button></div>`;
+    return;
+  }
+  const lowerQ = q.toLowerCase(); const hits = [];
+  CATS.forEach(c => c.games.forEach((g,i) => { if(g.toLowerCase().includes(lowerQ)) hits.push({ c, g, i }); }));
+  if(!hits.length){
+    res.innerHTML = `<div class="empty">没有找到相关游戏或房间。<br><button class="ghost small" style="margin-top:12px" onclick="go('apply')">申请新增游戏</button></div>`;
+    return;
+  }
+  res.innerHTML = `<div class="sec-title">搜索结果（${hits.length}）</div><div class="games">
+    ${hits.slice(0,80).map(h => `<div class="game" onclick="go('rooms',{catId:'${h.c.id}',idx:${h.i}})">
+      <div class="g-ico" style="background:${h.c.color}22;color:${h.c.color}">${esc(h.g.slice(0,2))}</div>
+      <div><div class="g-name">${esc(h.g)}</div><div class="g-meta">${esc(h.c.name)}</div></div></div>`).join('')}</div>`;
+}
+
+function viewCat(catId){
+  const c = catById(catId); if(!c) return `<div class="empty">类别不存在</div>`;
+  return `<div class="backbar"><span class="back" onclick="go('home')">← 返回类别</span></div>
+  <div class="page-title">${esc(c.name)}</div><div class="page-sub">共 ${c.games.length} 款游戏 · 点击游戏查看或创建搭子房间</div>
+  <div class="cat-tools" style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+    <input id="catSearch" placeholder="搜索本类游戏…" oninput="filterCatGames()" style="flex:1;min-width:180px">
+    <select id="catSort" onchange="filterCatGames()" style="width:auto;"><option value="default">默认排序</option><option value="az">游戏名 A–Z</option><option value="active">最近有人开房</option></select></div>
+  <div class="games" id="catGameGrid"></div>`;
+}
+function filterCatGames(){
+  const c = catById(view.catId); if(!c) return;
+  const inputEl = document.getElementById('catSearch'); const sortEl = document.getElementById('catSort');
+  if(!inputEl || !sortEl) return;
+  const q = (inputEl.value || '').trim().toLowerCase(); const sort = sortEl.value;
+  const allRooms = loadRooms(); const counts = {};
+  allRooms.forEach(r => { if(roomStatus(r) === 'open') counts[r.gameKey] = (counts[r.gameKey] || 0) + 1; });
+  let games = c.games.map((g, i) => ({ name: g, idx: i, count: counts[gameKey(c.id, i)] || 0 }));
+  if (q) games = games.filter(g => g.name.toLowerCase().includes(q));
+  if (sort === 'az') games.sort((a, b) => a.name.localeCompare(b.name));
+  else if (sort === 'active') games.sort((a, b) => b.count - a.count);
+  const html = games.map(g => `<div class="game" onclick="go('rooms',{catId:'${c.id}',idx:${g.idx}})">
+    <div class="g-ico" style="background:${c.color}22;color:${c.color}">${esc(g.name.slice(0,2))}</div>
+    <div><div class="g-name">${esc(g.name)}</div><div class="g-meta">${g.count} 个本机房间</div></div></div>`).join('');
+  document.getElementById('catGameGrid').innerHTML = html || '<div class="empty">没有找到符合条件的游戏</div>';
+}
+
+function viewRooms(catId, idx){
+  const c = catById(catId); if(!c) return `<div class="empty">类别不存在</div>`;
+  const game = c.games[idx]; const key = gameKey(catId, idx); const list = roomsOfGame(key);
+  const activeServers = Array.from(new Set(list.map(r => r.server).filter(Boolean)));
+  const config = GAME_CUSTOM_CONFIG[game] || CAT_DEFAULT_CONFIG[c.id] || {};
+  const defaultServers = config.servers || ['国服','亚服','欧服','其他'];
+  const finalServers = Array.from(new Set([...defaultServers, ...activeServers])).filter(s => s !== '其他');
+  const open = applyFilters(list.filter(r => roomStatus(r) === 'open')).sort((a,b) => roomScore(b) - roomScore(a));
+  const started = list.filter(r => roomStatus(r) === 'started');
+  const done = list.filter(r => ['expired','closed'].includes(roomStatus(r)));
+  const filterHTML = `<div class="filters"><span class="filter-label">筛选：</span>
+    <select onchange="setFilter('server', this.value)"><option value="">全部区服</option>${finalServers.map(s => `<option value="${s}" ${roomFilter.server === s ? 'selected' : ''}>${s}</option>`).join('')}</select>
+    <select onchange="setFilter('miss', this.value)"><option value="">缺人情况</option><option value="1" ${roomFilter.miss === '1' ? 'selected' : ''}>缺 1 人</option><option value="2" ${roomFilter.miss === '2' ? 'selected' : ''}>缺 2 人</option><option value="3" ${roomFilter.miss === '3' ? 'selected' : ''}>缺 3 人及以上</option></select>
+    <select onchange="setFilter('level', this.value)"><option value="">全部水平</option>${LEVEL_OPTIONS.map(l => `<option value="${l}" ${roomFilter.level === l ? 'selected' : ''}>${l}</option>`).join('')}</select></div>`;
+  return `<div class="backbar"><span class="back" onclick="go('cat',{catId:'${catId}'})">← 返回 ${esc(c.name)}</span></div>
+  <div class="page-title">${esc(game)}</div><div class="page-sub">${open.length} 个房间正在找人 · 房间创建后 ${LIST_TTL_MIN} 分钟自动过期</div>
+  <div style="margin-bottom:16px"><button onclick="go('create',{catId:'${catId}',idx:${idx}})">＋ 创建咔搭房间</button></div>
+  ${filterHTML}<div id="roomListArea">${renderRoomListArea(open, started, done)}</div>`;
+}
+
+function renderRoomListArea(open, started, done){
+  return `${open.length ? `<div class="room-grid">${open.map(r => roomCard(r)).join('')}</div>` : `<div class="empty">${(roomFilter.server || roomFilter.level || roomFilter.miss) ? '没有符合筛选条件的房间，换个条件试试。' : '还没有人开房。你可以第一个开一个。'}</div>`}
+    ${started.length ? `<div class="sec-title">已开搭</div><div class="room-grid">${started.map(r => roomCard(r)).join('')}</div>` : ''}
+    ${done.length ? `<div class="sec-title">已结束</div><div class="room-grid">${done.map(r => roomCard(r)).join('')}</div>` : ''}`;
+}
+
+function roomCard(r){
+  const st = roomStatus(r); const miss = Math.max(0, r.total - r.members.length); const left = r.members.length + '/' + r.total;
+  const hlCls = (st === 'open' && isHighlighted(r)) ? 'hl' : '';
+  const mineCls = isMember(r) || isHost(r) ? 'mine' : '';
+  let stateTag = '';
+  if(st === 'open'){
+    if(isHighlighted(r)) stateTag += `<span class="tag new">🔥 新开</span>`;
+    stateTag += miss > 0 ? `<span class="tag miss">缺 ${miss} 人</span>` : `<span class="tag full">已满待开</span>`;
+  } else if(st === 'started'){ stateTag = `<span class="tag live">已开搭</span>`; }
+  else { stateTag = `<span class="tag dim">已结束</span>`; }
+  const myTag = isHost(r) ? `<span class="tag mine">我的房</span>` : (isMember(r) ? `<span class="tag mine">已加入</span>` : '');
+  let btn = '';
+  if(st === 'open'){
+    if(isHost(r)) btn = `<button class="ghost" onclick="go('room',{roomId:'${r.id}'})">进入我的房</button>`;
+    else if(isMember(r)) btn = `<button class="ghost" onclick="go('room',{roomId:'${r.id}'})">回到房间</button>`;
+    else if(r.members.length >= r.total) btn = `<button class="ghost" disabled>已满员</button>`;
+    else btn = `<button onclick="joinRoom('${r.id}')">加入</button>`;
+  } else if(st === 'started'){ btn = (isMember(r) || isHost(r)) ? `<button class="ghost" onclick="go('room',{roomId:'${r.id}'})">进入房间</button>` : `<button class="ghost" disabled>已开搭</button>`; }
+  else { btn = `<button class="ghost" disabled>已结束</button>`; }
+  return `<div class="rcard ${hlCls} ${st === 'started' ? 'started' : ''} ${(st === 'expired' || st === 'closed') ? 'expired' : ''} ${mineCls}">
+    <div class="rcard-top"><div><div class="rcard-game">${esc(r.mode)}</div><div class="rcard-sub">${esc(r.game)} · 房主 ${esc(r.host)}</div></div><div class="rcard-count"><b>${left}</b></div></div>
+    <div class="rcard-tags">
+      <span class="tag">区服: ${esc(r.server)}</span>
+      <span class="tag">模式: ${esc(r.mode)}</span>
+      <span class="tag">水平: ${esc(r.level)}</span>
+      ${r.roomType ? `<span class="tag">类型: ${esc(r.roomType)}</span>` : ''}
+      ${stateTag}${myTag}
+    </div>
+    ${r.note ? `<div class="rcard-note">${esc(r.note)}</div>` : `<div class="rcard-note" style="opacity:.5">无备注</div>`}
+    <div class="rcard-foot">${btn}</div></div>`;
+}
+
+function viewMyRooms(){
+  const rooms = myRooms();
+  return `<div class="backbar"><span class="back" onclick="go('home')">← 返回首页</span></div>
+  <div class="page-title">我的房</div><div class="page-sub">${rooms.length} 个正在进行的房间 · 只保存在本机浏览器</div>
+  <div id="myRoomsList">${renderMyRoomsList(rooms)}</div>`;
+}
+function renderMyRoomsList(rooms){
+  if(!rooms.length) return `<div class="empty">去首页选个游戏，开一个或者加入一个吧。</div>`;
+  const openRooms = rooms.filter(r => roomStatus(r) === 'open');
+  const startedRooms = rooms.filter(r => roomStatus(r) === 'started');
+  return `${openRooms.length ? `<div class="sec-title">招人中</div><div class="room-grid">${openRooms.map(r => roomCard(r)).join('')}</div>` : ''}
+    ${startedRooms.length ? `<div class="sec-title">已开搭</div><div class="room-grid">${startedRooms.map(r => roomCard(r)).join('')}</div>` : ''}`;
+}
+
+function getSelectValue(selId, customId){
+  const sel = document.getElementById(selId); if(!sel) return '';
+  if(sel.value === '其他'){ const ci = document.getElementById(customId); return ci ? ci.value.trim() : ''; }
+  return sel.value;
+}
+function toggleCustom(selId, customId){
+  const sel = document.getElementById(selId); const ci = document.getElementById(customId);
+  if(!sel || !ci) return; ci.style.display = sel.value === '其他' ? 'block' : 'none';
+}
+
+function viewCreate(catId, idx){
+  const c = catById(catId); const game = c.games[idx];
+  const config = GAME_CUSTOM_CONFIG[game] || CAT_DEFAULT_CONFIG[c.id] || {};
+  const servers = config.servers || ['国服','亚服','欧服','其他'];
+  const modes = config.modes || ['匹配','排位','休闲','其他'];
+  const totalOptions = []; for(let n=1;n<=11;n++) totalOptions.push(`<option value="${n}" ${n===3?'selected':''}>${n}</option>`);
+  return `<div class="backbar"><span class="back" onclick="go('rooms',{catId:'${catId}',idx:${idx}})">← 返回 ${esc(game)}</span></div>
+  <div class="page-title">创建咔搭房间</div><div class="page-sub">用下拉选项快速完成信息填写，减少自由文本</div>
+  <div class="form"><label>游戏</label><input value="${esc(game)}" disabled>
+    <div class="row2"><div><label>区服</label><select id="f_server" onchange="toggleCustom('f_server','f_server_custom')">${servers.map(s => `<option>${s}</option>`).join('')}</select><input id="f_server_custom" placeholder="自定义区服" style="display:none;margin-top:6px"></div>
+    <div><label>模式</label><select id="f_mode" onchange="toggleCustom('f_mode','f_mode_custom')">${modes.map(m => `<option>${m}</option>`).join('')}</select><input id="f_mode_custom" placeholder="自定义模式" style="display:none;margin-top:6px"></div></div>
+    <div class="row2"><div><label>需搭几人（房主除外）</label><select id="f_total">${totalOptions.join('')}</select></div>
+    <div><label>段位 / 水平</label><select id="f_level">${LEVEL_OPTIONS.map(l => `<option>${l}</option>`).join('')}</select></div></div>
+    <div class="row2"><div><label>房间类型</label><select id="f_type">${TYPE_OPTIONS.map(t => `<option>${t}</option>`).join('')}</select></div><div></div></div>
+    <label>备注（选填，禁止填写联系方式）</label><textarea id="f_note" rows="2" placeholder="如：随便打打不喷人；或缺一个奶妈"></textarea>
+    <div class="hint">房间创建后 ${LIST_TTL_MIN} 分钟自动过期。开搭后聊天 ${CHAT_TTL_MIN} 分钟无活动销毁。</div>
+    <div class="form-actions"><button onclick="submitCreate('${catId}',${idx})">创建房间</button><button class="ghost" onclick="go('rooms',{catId:'${catId}',idx:${idx}})">取消</button></div></div>`;
+}
+
+function submitCreate(catId, idx){
+  if(!getName()){ ensureNick(() => submitCreate(catId, idx)); return; }
+  const c = catById(catId); const game = c.games[idx];
+  const server = getSelectValue('f_server','f_server_custom'); const mode = getSelectValue('f_mode','f_mode_custom');
+  const note = document.getElementById('f_note').value.trim(); const roomType = document.getElementById('f_type').value;
+  if(!server || !mode){ showToast('请选择或填写区服和模式', 'warn'); return; }
+  const c1 = containsBlockedContent(server), c2 = containsBlockedContent(mode), c3 = containsBlockedContent(note);
+  if(c1.blocked || c2.blocked || c3.blocked){ showToast('包含违禁词', 'warn'); return; }
+  const needNum = +document.getElementById('f_total').value; const total = needNum + 1; const now = Date.now();
+  const room = { id: uid(), catId, idx, gameKey: gameKey(catId, idx), game, host: getName(), hostSid: MY_SID, server, mode, roomType, total, level: document.getElementById('f_level').value, note, members: [{ sid:MY_SID, name:getName() }], messages: [], status: 'open', createdAt: now, lastActivity: now };
+  const list = loadRooms(); list.push(room); saveRooms(list, { noRender:true }); go('room', { roomId: room.id });
+}
+
+function viewRoom(roomId){
+  const r = loadRooms().find(x => x.id === roomId); if(!r) return `<div class="empty">房间不存在或已销毁。</div>`;
+  const st = roomStatus(r); const inRoom = isMember(r); const amHost = isHost(r);
+  const miss = Math.max(0, r.total - r.members.length); const c = catById(r.catId);
+  let stateHTML = '';
+  if(st === 'open'){ stateHTML = `<div class="statebar"><span class="pill open">招人中</span><span>${miss > 0 ? `还缺 ${miss} 位搭子` : '人已经齐了，可以开搭'}${amHost ? '：人够了就点开搭，房间会停止招人。' : '，等房主开搭。'}</span></div>`; }
+  else if(st === 'started'){ stateHTML = `<div class="statebar"><span class="pill started">已开搭</span><span>房间已停止招人，聊天保留 ${CHAT_TTL_MIN} 分钟供确认信息。</span></div>`; }
+  else { stateHTML = `<div class="statebar"><span class="pill closed">已结束</span><span>这个房间已经关闭。</span></div>`; }
+  let actions = '';
+  if(st === 'open'){
+    if(amHost){ const canStart = r.members.length >= 2; actions += `<button onclick="startRoom('${r.id}')" ${canStart ? '' : 'disabled'}>开搭</button>`; if(!canStart) actions += `<span class="hint" style="margin:0">至少等一位搭子加入后开搭</span>`; }
+    else if(!inRoom && r.members.length < r.total){ actions += `<button onclick="joinRoom('${r.id}')">加入这个房间</button>`; }
+    else if(!inRoom && r.members.length >= r.total){ actions += `<button class="ghost" disabled>已满员</button>`; }
+  } else if(st === 'started'){ actions += `<span class="hint" style="margin:0">已开搭，新搭子无法再加入。</span>`; }
+  if(inRoom && (st === 'open' || st === 'started')) actions += `<button class="ghost small" onclick="leaveRoom('${r.id}')">退出房间</button>`;
+  if(amHost && st !== 'closed') actions += `<button class="ghost small" onclick="closeRoom('${r.id}')">解散房间</button>`;
+  if(!amHost) actions += `<button class="ghost small" onclick="reportRoom('${r.id}')">举报并拉黑房主</button>`;
+  if(amHost && st === 'open' && r.members.length === 1) actions += `<button class="ghost small" onclick="simulateJoin('${r.id}')">【演示】模拟搭子加入</button>`;
+  const membersHTML = r.members.map(m => {
+    const cls = []; if(m.sid === r.hostSid) cls.push('host'); if(m.sid === MY_SID) cls.push('mine');
+    const kick = (amHost && m.sid !== MY_SID) ? `<span class="kick" onclick="kickMember('${r.id}','${m.sid}')" title="移出房间">×</span>` : '';
+    return `<span class="mem ${cls.join(' ')}">${esc(m.name)}${m.sid === r.hostSid ? ' · 房主' : ''}${kick}</span>`;
+  }).join('');
+  return `<div class="backbar"><span class="back" onclick="go('rooms',{catId:'${r.catId}',idx:${r.idx}})">← 返回房间列表</span></div>
+  <div class="roomhead ${st === 'started' ? 'started' : ''}"><div class="rh-top"><div>
+    <div class="rh-title">${esc(r.game)} · ${esc(r.mode)}<span style="font-size:13px;color:var(--muted);margin-left:10px">房间号：${esc(r.id)} <a onclick="copyRoomId('${r.id}')" style="font-size:12px">复制</a></span></div>
+    <div class="rh-sub">${esc(c ? c.name : '')} · 房主 ${esc(r.host)}</div></div><div class="timer" id="roomTimer">计算中…</div></div>
+    ${stateHTML}<div class="rcard-tags" style="margin-top:10px">
+      <span class="tag">区服: ${esc(r.server)}</span>
+      <span class="tag">模式: ${esc(r.mode)}</span>
+      <span class="tag">水平: ${esc(r.level)}</span>
+      ${r.roomType ? `<span class="tag">类型: ${esc(r.roomType)}</span>` : ''}
+      <span class="tag">人数: ${r.members.length}/${r.total}</span>
+    </div>
+    ${r.note ? `<div class="rcard-note" style="-webkit-line-clamp:unset;margin-top:8px">${esc(r.note)}</div>` : ''}
+    <div class="members">${membersHTML}</div><div class="actions">${actions}</div></div>
+  <div class="chat"><div class="chat-head"><span>临时聊天 · 仅本房间可见 · 仅本机存储</span><span id="chatLeft"></span></div>
+    <div class="chat-warn">禁止发布联系方式、引导站外沟通或任何有偿服务。违规房间将被解散并记录。请勿拆分发送信息，系统会拼接检测。</div>
+    <div class="msgs" id="msgs">${renderMsgs(r)}</div>
+    ${inRoom && st !== 'closed' ? `<div class="chat-input"><input id="msgInput" placeholder="说点什么，说好就进游戏…" onkeydown="if(event.key==='Enter')sendMsg('${r.id}')"><button onclick="sendMsg('${r.id}')">发送</button></div>` : `<div class="chat-input"><input disabled placeholder="${st === 'closed' ? '房间已销毁' : '加入房间后才能聊天'}"></div>`}
+    <div class="chat-foot"><span>最后消息后 ${CHAT_TTL_MIN} 分钟销毁。平台不提供好友与私信。</span></div></div>`;
+}
+
+function copyRoomId(id){
+  navigator.clipboard.writeText(id).then(() => { showToast('房间号已复制！发给朋友，在首页搜索框输入即可直接进房。', 'success'); }).catch(() => { showToast('复制失败，请手动选中复制', 'warn'); });
+}
+function renderMsgs(r){
+  if(!r.messages.length) return `<div class="msg sys">还没有消息，打个招呼开始搭吧 👋</div>`;
+  return r.messages.map(m => {
+    if(m.from === 'system' || m.sys) return `<div class="msg sys">${esc(m.text)}</div>`;
+    const isDemo = m.sid && String(m.sid).startsWith('demo_');
+    return `<div class="msg ${m.sid === MY_SID ? 'mine' : ''} ${isDemo ? 'demo' : ''}"><div class="who">${esc(m.name)} · ${fmtClock(m.at)}</div><div class="bubble">${esc(m.text)}</div></div>`;
+  }).join('');
+}
+function getRecentUserMsgs(r, windowMs, limit){ const now = Date.now(); return r.messages.filter(m => m.sid === MY_SID && (now - m.at) < windowMs).slice(-limit); }
+function sendMsg(roomId){
+  const input = document.getElementById('msgInput'); if(!input) return;
+  const text = input.value.trim(); if(!text) return;
+  const list = loadRooms(); const r = list.find(x => x.id === roomId); if(!r) return;
+  if(roomStatus(r) === 'closed'){ showToast('房间已结束', 'warn'); return; }
+  if(!isMember(r)){ showToast('请先加入房间', 'warn'); return; }
+  const chk = containsBlockedContent(text); if(chk.blocked){ showToast(chk.reason + '。', 'warn'); return; }
+  if(charLen(text) < 2 && !SHORT_OK.has(text.toLowerCase())){ showToast('请把话说完整再发。', 'warn'); return; }
+  const recent10s = getRecentUserMsgs(r, 10*1000, 10); if(recent10s.length >= 3){ showToast('发送太快了，稍等几秒。', 'warn'); return; }
+  const recentShort = getRecentUserMsgs(r, 3*60*1000, 6).filter(m => charLen(m.text) < 4);
+  const combined = recentShort.map(m => m.text).join('') + text;
+  const ctxChk = containsBlockedContent(combined); if(ctxChk.blocked){ showToast('检测到疑似拆分发送，已拦截。', 'warn'); return; }
+  r.messages.push({ sid:MY_SID, name:getName(), text, at:Date.now() }); r.lastActivity = Date.now();
+  saveRooms(list, { noRender:true }); input.value = '';
+  const box = document.getElementById('msgs'); if(box){ box.innerHTML = renderMsgs(r); box.scrollTop = box.scrollHeight; }
+}
+
+function startRoom(roomId){
+  const list = loadRooms(); const r = list.find(x => x.id === roomId); if(!r) return;
+  if(!isHost(r)){ showToast('只有房主可以开搭', 'warn'); return; }
+  if(roomStatus(r) !== 'open'){ showToast('当前状态不能开搭', 'warn'); return; }
+  if(r.members.length < 2){ showToast('至少等一位搭子加入才能开搭', 'warn'); return; }
+  r.status = 'started'; r.startedAt = Date.now(); r.lastActivity = Date.now();
+  r.messages.push({ sys:true, text:'房主已开搭，房间停止招人。祝你们玩得开心。', at:Date.now() });
+  saveRooms(list, { noRender:true }); render();
+}
+function closeRoom(roomId){
+  const list = loadRooms(); const r = list.find(x => x.id === roomId); if(!r) return;
+  if(!isHost(r)){ showToast('只有房主可以解散房间', 'warn'); return; }
+  confirmAction('确定解散这个房间吗？', () => {
+    r.status = 'closed'; r.lastActivity = Date.now(); r.messages.push({ sys:true, text:'房主解散了房间。', at:Date.now() });
+    saveRooms(list, { noRender:true }); go('rooms', { catId:r.catId, idx:r.idx });
+  }, { title:'解散房间', okText:'解散', danger:true });
+}
+function joinRoom(roomId){
+  if(!getName()){ ensureNick(() => joinRoom(roomId)); return; }
+  const list = loadRooms(); const r = list.find(x => x.id === roomId); if(!r){ showToast('房间不存在', 'warn'); return; }
+  if(isMember(r)){ go('room',{ roomId }); return; }
+  if(roomStatus(r) !== 'open'){ showToast('这个房间已经不在招人了', 'warn'); return; }
+  if(r.members.length >= r.total){ showToast('房间已满员', 'warn'); return; }
+  if(isBlacklistedByMe(r.hostSid)){ showToast('你曾举报过该房主，不能再加入。', 'warn'); return; }
+  r.members.push({ sid:MY_SID, name:getName() }); r.messages.push({ sys:true, text:getName() + ' 加入了房间', at:Date.now() });
+  r.lastActivity = Date.now(); saveRooms(list, { noRender:true }); go('room', { roomId });
+}
+function leaveRoom(roomId){
+  const list = loadRooms(); const r = list.find(x => x.id === roomId); if(!r) return;
+  const wasHost = isHost(r); r.members = r.members.filter(m => m.sid !== MY_SID);
+  r.messages.push({ sys:true, text:getName() + ' 离开了房间', at:Date.now() }); r.lastActivity = Date.now();
+  if(r.members.length === 0){ r.status = 'closed'; saveRooms(list, { noRender:true }); go('rooms', { catId:r.catId, idx:r.idx }); return; }
+  if(wasHost){ const newHost = r.members[0]; r.hostSid = newHost.sid; r.host = newHost.name; r.messages.push({ sys:true, text:`房主已离开，${newHost.name} 成为新房主。`, at:Date.now() }); }
+  saveRooms(list, { noRender:true }); go('rooms', { catId:r.catId, idx:r.idx });
+}
+function kickMember(roomId, sid){
+  const list = loadRooms(); const r = list.find(x => x.id === roomId); if(!r || !isHost(r)){ showToast('只有房主可以移出成员', 'warn'); return; }
+  const target = r.members.find(m => m.sid === sid); if(!target) return;
+  confirmAction(`确定把 ${target.name} 移出房间吗？`, () => {
+    r.members = r.members.filter(m => m.sid !== sid); r.messages.push({ sys:true, text:`${target.name} 被房主移出了房间。`, at:Date.now() });
+    r.lastActivity = Date.now(); saveRooms(list, { noRender:true }); render();
+  }, { title:'移出成员', okText:'移出', danger:true });
+}
+function simulateJoin(roomId){
+  const list = loadRooms(); const r = list.find(x => x.id === roomId); if(!r) return;
+  if(roomStatus(r) !== 'open'){ showToast('房间已不在招人', 'warn'); return; }
+  if(r.members.length >= r.total){ showToast('房间已满', 'warn'); return; }
+  const name = '【演示】搭子' + Math.floor(Math.random()*900+100); const sid = 'demo_' + uid();
+  r.members.push({ sid, name }); r.messages.push({ sys:true, text:name + ' 加入了房间（演示）', at:Date.now() });
+  r.messages.push({ sid, name, text:'（演示消息）来了，什么时候开？', at:Date.now() });
+  r.lastActivity = Date.now(); saveRooms(list, { noRender:true }); render();
+}
+
+function reportRoom(roomId){
+  const r = loadRooms().find(x => x.id === roomId); if(!r) return;
+  if(isHost(r)){ showToast('不能举报自己的房间', 'warn'); return; }
+  showModal(`<h3>举报并拉黑房主</h3><p>本机演示版会：① 记录举报；② 你退出房间；③ 你不再加入该房主开的房。</p>
+    <select id="rp_reason"><option>广告 / 拉人加群</option><option>辱骂 / 骚扰</option><option>色情 / 违法违规</option><option>诈骗 / 交易</option><option>其他</option></select>
+    <div class="modal-actions"><button class="ghost" onclick="closeModal()">取消</button><button class="danger" onclick="submitReport('${roomId}')">举报并拉黑</button></div>`);
+}
+function submitReport(roomId){
+  const list = loadRooms(); const r = list.find(x => x.id === roomId); if(!r){ closeModal(); return; }
+  if(isHost(r)){ closeModal(); showToast('不能举报自己', 'warn'); return; }
+  const reason = document.getElementById('rp_reason').value; let arr = [];
+  try{ arr = JSON.parse(localStorage.getItem(K_REPORT)) || []; }catch(e){}
+  arr.push({ roomId, reason, at:Date.now(), by:MY_SID, hostSid:r.hostSid, host:r.host });
+  localStorage.setItem(K_REPORT, JSON.stringify(arr)); blockUser(r.hostSid);
+  if(r.members.some(m => m.sid === MY_SID)){
+    r.members = r.members.filter(m => m.sid !== MY_SID);
+    if(r.members.length === 0) r.status = 'closed';
+    else if(r.hostSid === MY_SID){ const nh = r.members[0]; r.hostSid = nh.sid; r.host = nh.name; }
+    r.messages.push({ sys:true, text:'有成员举报并离开了房间。', at:Date.now() }); r.lastActivity = Date.now();
+    saveRooms(list, { noRender:true });
+  }
+  closeModal(); showToast('已提交，房主已被本机拉黑。', 'success'); go('home');
+}
+
+function viewApply(){
+  return `<div class="backbar"><span class="back" onclick="go('home')">← 返回首页</span></div>
+  <div class="page-title">申请新增游戏</div><div class="page-sub">游戏库由官方审核添加。请说明这款游戏为什么需要「临时搭子」。</div>
+  <div class="form"><label>游戏名称</label><input id="a_name" placeholder="请输入准确的游戏名">
+    <label>所属类别</label><select id="a_cat">${CATS.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select>
+    <div class="row2"><div><label>典型组队人数</label><input id="a_size" placeholder="如：3 人 / 5 人"></div>
+    <div><label>是否存在区服差异</label><select id="a_server"><option>有区服</option><option>无区服</option></select></div></div>
+    <label>主要组队场景</label><textarea id="a_why" rows="3" placeholder="如：需要固定队打团本"></textarea>
+    <div class="hint">提交后进入人工审核。意向达标后开通。</div>
+    <div class="form-actions"><button onclick="submitApply()">提交申请</button><button class="ghost" onclick="go('home')">取消</button></div></div>`;
+}
+function submitApply(){
+  const name = document.getElementById('a_name').value.trim(); const why = document.getElementById('a_why').value.trim();
+  if(!name || !why){ showToast('请填写名称和场景', 'warn'); return; }
+  const c1 = containsBlockedContent(name), c2 = containsBlockedContent(why);
+  if(c1.blocked || c2.blocked){ showToast('包含违禁词', 'warn'); return; }
+  let arr = []; try{ arr = JSON.parse(localStorage.getItem(K_APPLY)) || []; }catch(e){}
+  arr.push({ name, why, cat: document.getElementById('a_cat').value, size: document.getElementById('a_size').value.trim(), server: document.getElementById('a_server').value, at: Date.now(), by:MY_SID });
+  localStorage.setItem(K_APPLY, JSON.stringify(arr)); showToast('已提交，等待审核。', 'success'); go('home');
+}
+
+let ticker = null, tickCount = 0, lastListSignature = '';
+function listSignature(rooms){ return rooms.map(r => r.id + ':' + roomStatus(r) + ':' + r.members.length + ':' + (r.status || '')).join('|'); }
+function startTicker(){
+  if(ticker) clearInterval(ticker); tickCount = 0;
+  ticker = setInterval(() => {
+    tickCount++;
+    const timerEl = document.getElementById('roomTimer');
+    if(timerEl && view.name === 'room'){
+      const r = loadRooms().find(x => x.id === view.roomId);
+      if(!r){ timerEl.textContent = '房间已销毁'; return; }
+      const st = roomStatus(r);
+      if(st === 'open'){
+        const left = expireAtOf(r) - Date.now();
+        timerEl.textContent = (isHighlighted(r) ? '🔥 新开 · ' : '招人中 · ') + '剩 ' + mmss(left);
+        timerEl.style.color = left < 60000 ? 'var(--danger)' : 'var(--warn)';
+      } else if(st === 'started'){
+        const left = (r.lastActivity || Date.now()) + CHAT_TTL_MIN*60000 - Date.now();
+        timerEl.textContent = '已开搭 · 聊天剩 ' + mmss(left);
+        timerEl.style.color = left < 60000 ? 'var(--danger)' : 'var(--ok)';
+      } else { timerEl.textContent = '已结束'; timerEl.style.color = 'var(--muted)'; }
+    }
+    if(tickCount % 3 === 0){
+      if(view.name === 'rooms'){
+        const c = catById(view.catId); if(!c) return;
+        const list = roomsOfGame(gameKey(view.catId, view.idx));
+        const sig = listSignature(list) + '#' + JSON.stringify(roomFilter);
+        if(sig !== lastListSignature){
+          lastListSignature = sig;
+          const open = applyFilters(list.filter(r => roomStatus(r) === 'open')).sort((a,b) => roomScore(b) - roomScore(a));
+          const started = list.filter(r => roomStatus(r) === 'started');
+          const done = list.filter(r => ['expired','closed'].includes(roomStatus(r)));
+          const area = document.getElementById('roomListArea'); if(area) area.innerHTML = renderRoomListArea(open, started, done);
+        }
+      } else if(view.name === 'myrooms'){
+        const rooms = myRooms(); const sig = listSignature(rooms);
+        if(sig !== lastListSignature){ lastListSignature = sig; const area = document.getElementById('myRoomsList'); if(area) area.innerHTML = renderMyRoomsList(rooms); }
+      }
+      updateBadge();
+    }
+  }, 1000);
+}
+
+window.addEventListener('storage', e => {
+  if(e.key !== K_ROOMS) return;
+  if(view.name === 'room'){
+    const r = loadRooms().find(x => x.id === view.roomId);
+    if(r){
+      const box = document.getElementById('msgs');
+      if(box){ const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 40; box.innerHTML = renderMsgs(r); if(atBottom) box.scrollTop = box.scrollHeight; }
+      updateBadge();
+    }
+  } else if(view.name === 'rooms' || view.name === 'myrooms'){ lastListSignature = ''; updateBadge(); }
+  else if(view.name === 'home'){ render(); }
+});
+
+if(!location.hash) history.replaceState(null, '', '#/');
+render();
+</script>
+</body>
+</html>
