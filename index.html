@@ -57,7 +57,14 @@
   .logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#5b9dff,#8b6bff);display:grid;place-items:center;font-weight:900;color:#06101f;font-size:19px;box-shadow:0 8px 22px -8px rgba(91,157,255,.9);transition:transform .2s}
   .brand:hover .logo{transform:rotate(-6deg) scale(1.05)}
   .bname{font-weight:900;font-size:18px;letter-spacing:2px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-  .demo-badge{font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;background:rgba(245,166,35,.15);color:var(--warn);border:1px solid rgba(245,166,35,.4);letter-spacing:.5px;white-space:nowrap;cursor:help}
+  
+  /* 修改点 1：内测版标签样式（蓝色低调边框） */
+  .demo-badge{
+    font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;
+    background:rgba(91,157,255,.1);color:var(--accent);
+    border:1px solid rgba(91,157,255,.3);letter-spacing:.5px;white-space:nowrap;
+  }
+  
   .bslogan{font-size:11.5px;color:var(--muted)}
   .top-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
   .me{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
@@ -76,7 +83,6 @@
   .stat:hover{transform:translateY(-2px);border-color:rgba(91,157,255,.5)}
   .stat b{display:block;font-size:23px;color:var(--text);font-weight:900;line-height:1.2;margin-bottom:1px}
 
-  /* 极速发车 & 搜索区（更扁、更宽） */
   .action-box { display: flex; gap: 14px; margin: 26px auto 0; max-width: 680px; flex-wrap: wrap; align-items: center; }
   .action-card {
     flex: 1; min-width: 220px; background: linear-gradient(165deg, rgba(255,255,255,.05), rgba(255,255,255,.01));
@@ -192,7 +198,6 @@
   .msg .bubble{background:#1e2733;border:1px solid rgba(255,255,255,.06);padding:10px 14px;font-size:14px;word-break:break-word;line-height:1.55;border-radius:18px 18px 18px 6px;box-shadow:0 6px 16px -12px rgba(0,0,0,.9)}
   .msg.mine{align-self:flex-end;text-align:right}
   .msg.mine .bubble{background:linear-gradient(135deg,#3f7fe0,#6b5cf0);border-color:rgba(255,255,255,.12);color:#f4f8ff;border-radius:18px 18px 6px 18px;box-shadow:0 10px 24px -14px rgba(91,157,255,.9)}
-  .msg.demo .bubble{border-style:dashed;opacity:.85}
   .msg.sys{align-self:center;max-width:90%;text-align:center;font-size:11.5px;color:#8f9daf;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.06);padding:4px 14px;border-radius:20px}
   .chat-input{display:flex;gap:10px;padding:13px 16px;border-top:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.025)}
   .chat-input input{background:#10161e;border-radius:22px;padding:11px 18px;border-color:rgba(255,255,255,.08)}
@@ -238,7 +243,7 @@
     <div class="brand" onclick="go('home')">
       <span class="logo">咔</span>
       <div>
-        <div class="bname">咔搭 <span class="demo-badge" title="本页为纯前端演示：房间和消息只保存在你本机浏览器，不会上传。">本机演示</span></div>
+        <div class="bname">咔搭 <span class="demo-badge">内测版 v1.0</span></div>
         <div class="bslogan">不语音 · 不加好友 · 不交易 · 搭一把就走</div>
       </div>
     </div>
@@ -251,11 +256,12 @@
 
 <main class="wrap" id="app"></main>
 
+<!-- 修改点 4：底部声明 -->
 <footer class="foot">
   <div class="wrap">
-    <div><span class="dot"></span><b>本机演示说明：</b>房间、消息、拉黑、举报记录都只保存在当前浏览器，不会上传，也不会跨设备同步。</div>
-    <div>正式版本将接入：手机号实名、内容安全审核、服务端房间与消息、双向黑名单、人工举报处置、消息留存 6 个月。</div>
-    <div>不做语音、不做好友、不做私信、不做交易。找搭子，搭一把，各自回到生活里。</div>
+    <div><span class="dot"></span><b>咔搭内测说明：</b></div>
+    <div>当前为 1.0 内测版，数据仅保存在当前浏览器。如果你想和朋友测试完整的建房/聊天流程，请让他用“同一台设备的同一个浏览器”（或者开一个无痕窗口）打开你的房间号，即可体验。</div>
+    <div>正式版将接入手机号实名、服务端跨设备同步、双向黑名单等，敬请期待。</div>
   </div>
 </footer>
 
@@ -263,7 +269,11 @@
 
 <script>
 /* =========================================================
-   咔搭 KADA · v17 (扁平发车 + 完整卡片信息)
+   咔搭 KADA · v19 (内测纯净版)
+   - 更新左上角标签
+   - 去除本机找人字眼
+   - 删除所有模拟机器人
+   - 更新底部声明
    ========================================================= */
 
 const CATS = [
@@ -325,7 +335,7 @@ const GAME_CUSTOM_CONFIG = {
   '泰拉瑞亚': { servers: ['联机','其他'], modes: ['生存','建筑','Boss','其他'] }
 };
 
-const K_ROOMS = 'dazi.rooms.v17';
+const K_ROOMS = 'dazi.rooms.v19';
 const K_SID = 'dazi.sid.v1';
 const K_NAME = 'dazi.name.v1';
 const K_APPLY = 'dazi.apply.v1';
@@ -584,10 +594,16 @@ function viewHome(){
           <div><div class="g-name">${esc(g)}</div><div class="g-meta">最近搭过 ${f.count} 次</div></div></div>`;
       }).join('')}</div>`;
   }
+  
+  // 修改点 2：正在找人
   return `<section class="hero">
     <h1>咔嚓一下，即刻开搭。</h1>
     <p>选一个游戏，开个房间，凑一队。</p>
-    <div class="stats"><div class="stat"><b>${CATS.length}</b>游戏类别</div><div class="stat"><b>${totalGames}</b>已收录游戏</div><div class="stat"><b>${open.length}</b>本机正在找人</div></div>
+    <div class="stats">
+      <div class="stat"><b>${CATS.length}</b>游戏类别</div>
+      <div class="stat"><b>${totalGames}</b>已收录游戏</div>
+      <div class="stat"><b>${open.length}</b>正在找人</div>
+    </div>
     
     <div class="action-box">
       <div class="action-card" onclick="showQuickStartModal()">
@@ -607,7 +623,7 @@ function viewHome(){
     <section class="cats">
       ${CATS.map(c => `<div class="cat" style="--c:${c.color}" onclick="go('cat',{catId:'${c.id}'})">
         <div class="cat-ico">${esc(c.name.slice(0,2))}</div><div class="cat-name">${esc(c.name)}</div>
-        <div class="cat-meta">${c.games.length} 款游戏 · ${countByCat(c.id)} 个本机房间</div></div>`).join('')}
+        <div class="cat-meta">${c.games.length} 款游戏 · ${countByCat(c.id)} 个房间</div></div>`).join('')}
     </section>
     <section class="apply-box"><p>没有找到你的游戏？提交申请，同一游戏意向达到 50 人即开通分区。</p>
     <button class="ghost" onclick="go('apply')">申请新增游戏</button></section>
@@ -689,7 +705,7 @@ function filterCatGames(){
   else if (sort === 'active') games.sort((a, b) => b.count - a.count);
   const html = games.map(g => `<div class="game" onclick="go('rooms',{catId:'${c.id}',idx:${g.idx}})">
     <div class="g-ico" style="background:${c.color}22;color:${c.color}">${esc(g.name.slice(0,2))}</div>
-    <div><div class="g-name">${esc(g.name)}</div><div class="g-meta">${g.count} 个本机房间</div></div></div>`).join('');
+    <div><div class="g-name">${esc(g.name)}</div><div class="g-meta">${g.count} 个房间</div></div></div>`).join('');
   document.getElementById('catGameGrid').innerHTML = html || '<div class="empty">没有找到符合条件的游戏</div>';
 }
 
@@ -754,7 +770,7 @@ function roomCard(r){
 function viewMyRooms(){
   const rooms = myRooms();
   return `<div class="backbar"><span class="back" onclick="go('home')">← 返回首页</span></div>
-  <div class="page-title">我的房</div><div class="page-sub">${rooms.length} 个正在进行的房间 · 只保存在本机浏览器</div>
+  <div class="page-title">我的房</div><div class="page-sub">${rooms.length} 个正在进行的房间 · 仅保存在本机浏览器</div>
   <div id="myRoomsList">${renderMyRoomsList(rooms)}</div>`;
 }
 function renderMyRoomsList(rooms){
@@ -824,7 +840,8 @@ function viewRoom(roomId){
   if(inRoom && (st === 'open' || st === 'started')) actions += `<button class="ghost small" onclick="leaveRoom('${r.id}')">退出房间</button>`;
   if(amHost && st !== 'closed') actions += `<button class="ghost small" onclick="closeRoom('${r.id}')">解散房间</button>`;
   if(!amHost) actions += `<button class="ghost small" onclick="reportRoom('${r.id}')">举报并拉黑房主</button>`;
-  if(amHost && st === 'open' && r.members.length === 1) actions += `<button class="ghost small" onclick="simulateJoin('${r.id}')">【演示】模拟搭子加入</button>`;
+  // 修改点 3：已移除模拟机器人按钮
+  
   const membersHTML = r.members.map(m => {
     const cls = []; if(m.sid === r.hostSid) cls.push('host'); if(m.sid === MY_SID) cls.push('mine');
     const kick = (amHost && m.sid !== MY_SID) ? `<span class="kick" onclick="kickMember('${r.id}','${m.sid}')" title="移出房间">×</span>` : '';
@@ -857,8 +874,7 @@ function renderMsgs(r){
   if(!r.messages.length) return `<div class="msg sys">还没有消息，打个招呼开始搭吧 👋</div>`;
   return r.messages.map(m => {
     if(m.from === 'system' || m.sys) return `<div class="msg sys">${esc(m.text)}</div>`;
-    const isDemo = m.sid && String(m.sid).startsWith('demo_');
-    return `<div class="msg ${m.sid === MY_SID ? 'mine' : ''} ${isDemo ? 'demo' : ''}"><div class="who">${esc(m.name)} · ${fmtClock(m.at)}</div><div class="bubble">${esc(m.text)}</div></div>`;
+    return `<div class="msg ${m.sid === MY_SID ? 'mine' : ''}"><div class="who">${esc(m.name)} · ${fmtClock(m.at)}</div><div class="bubble">${esc(m.text)}</div></div>`;
   }).join('');
 }
 function getRecentUserMsgs(r, windowMs, limit){ const now = Date.now(); return r.messages.filter(m => m.sid === MY_SID && (now - m.at) < windowMs).slice(-limit); }
@@ -922,15 +938,7 @@ function kickMember(roomId, sid){
     r.lastActivity = Date.now(); saveRooms(list, { noRender:true }); render();
   }, { title:'移出成员', okText:'移出', danger:true });
 }
-function simulateJoin(roomId){
-  const list = loadRooms(); const r = list.find(x => x.id === roomId); if(!r) return;
-  if(roomStatus(r) !== 'open'){ showToast('房间已不在招人', 'warn'); return; }
-  if(r.members.length >= r.total){ showToast('房间已满', 'warn'); return; }
-  const name = '【演示】搭子' + Math.floor(Math.random()*900+100); const sid = 'demo_' + uid();
-  r.members.push({ sid, name }); r.messages.push({ sys:true, text:name + ' 加入了房间（演示）', at:Date.now() });
-  r.messages.push({ sid, name, text:'（演示消息）来了，什么时候开？', at:Date.now() });
-  r.lastActivity = Date.now(); saveRooms(list, { noRender:true }); render();
-}
+// 修改点 3：已移除 simulateJoin 整个函数
 
 function reportRoom(roomId){
   const r = loadRooms().find(x => x.id === roomId); if(!r) return;
