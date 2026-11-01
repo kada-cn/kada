@@ -58,7 +58,6 @@
   .brand:hover .logo{transform:rotate(-6deg) scale(1.05)}
   .bname{font-weight:900;font-size:18px;letter-spacing:2px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
   
-  /* 修改点 1：内测版标签样式（蓝色低调边框） */
   .demo-badge{
     font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;
     background:rgba(91,157,255,.1);color:var(--accent);
@@ -256,12 +255,15 @@
 
 <main class="wrap" id="app"></main>
 
-<!-- 修改点 4：底部声明 -->
 <footer class="foot">
   <div class="wrap">
     <div><span class="dot"></span><b>咔搭内测说明：</b></div>
-    <div>当前为 1.0 内测版，数据仅保存在当前浏览器。如果你想和朋友测试完整的建房/聊天流程，请让他用“同一台设备的同一个浏览器”（或者开一个无痕窗口）打开你的房间号，即可体验。</div>
+    <div>当前为 1.0 内测版，数据仅保存在当前浏览器。</div>
     <div>正式版将接入手机号实名、服务端跨设备同步、双向黑名单等，敬请期待。</div>
+    <!-- 问卷星链接 -->
+    <div style="margin-top: 15px;">
+      内测中，用着不爽？<a href="https://xiaoge.sojump.cn/q/iRsXB" target="_blank" style="color: var(--accent); font-weight: 600; text-decoration: underline;">花30秒骂我一下 →</a>
+    </div>
   </div>
 </footer>
 
@@ -595,7 +597,6 @@ function viewHome(){
       }).join('')}</div>`;
   }
   
-  // 修改点 2：正在找人
   return `<section class="hero">
     <h1>咔嚓一下，即刻开搭。</h1>
     <p>选一个游戏，开个房间，凑一队。</p>
@@ -840,7 +841,6 @@ function viewRoom(roomId){
   if(inRoom && (st === 'open' || st === 'started')) actions += `<button class="ghost small" onclick="leaveRoom('${r.id}')">退出房间</button>`;
   if(amHost && st !== 'closed') actions += `<button class="ghost small" onclick="closeRoom('${r.id}')">解散房间</button>`;
   if(!amHost) actions += `<button class="ghost small" onclick="reportRoom('${r.id}')">举报并拉黑房主</button>`;
-  // 修改点 3：已移除模拟机器人按钮
   
   const membersHTML = r.members.map(m => {
     const cls = []; if(m.sid === r.hostSid) cls.push('host'); if(m.sid === MY_SID) cls.push('mine');
@@ -938,7 +938,6 @@ function kickMember(roomId, sid){
     r.lastActivity = Date.now(); saveRooms(list, { noRender:true }); render();
   }, { title:'移出成员', okText:'移出', danger:true });
 }
-// 修改点 3：已移除 simulateJoin 整个函数
 
 function reportRoom(roomId){
   const r = loadRooms().find(x => x.id === roomId); if(!r) return;
@@ -1043,5 +1042,11 @@ window.addEventListener('storage', e => {
 if(!location.hash) history.replaceState(null, '', '#/');
 render();
 </script>
+
+<!-- LibreCounter 流量统计 -->
+<a href="https://librecounter.org/referer/show" target="_blank">
+  <img src="https://librecounter.org/counter.svg" referrerpolicy="unsafe-url" alt="统计" style="width:1px;height:1px;opacity:0;position:absolute;pointer-events:none;">
+</a>
+
 </body>
 </html>
